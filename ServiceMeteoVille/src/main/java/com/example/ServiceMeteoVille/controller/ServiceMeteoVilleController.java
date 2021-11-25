@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,15 +18,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+
 @Api
 @RestController
 public class ServiceMeteoVilleController {
     private int codeCity;
+
     @Autowired
     RestTemplate restTemplate;
 
-
-    @ApiOperation(value = "Get meteo with city name", response = Iterable.class, tags = "getMeteoByNameCity")
+    @ApiOperation(value = "Recuperation de la meteo de la ville", response = Iterable.class, tags = "getMeteoByNameCity")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success | OK"),
             @ApiResponse(code = 401, message = "error | Unauthorized"),
@@ -44,6 +46,24 @@ public class ServiceMeteoVilleController {
         return response;
     }
 
+    @ApiOperation(value = "Recuperation de la meteo du jour", response = Iterable.class, tags = "getDayMeteo")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success | OK"),
+            @ApiResponse(code = 401, message = "error | Unauthorized"),
+            @ApiResponse(code = 403, message = "error | Forbidden"),
+            @ApiResponse(code = 404, message = "error | Not found"),
+            @ApiResponse(code = 500, message = "error | Internal server ")
+    })
+    @RequestMapping(value = "getDayMeteo/{city}", method = RequestMethod.GET)
+    public String get1DayDailyForecasts(@PathVariable String city) {
+        int code = this.getCodeCity(city);
+        String response = restTemplate.exchange("http://dataservice.accuweather.com/forecasts/v1/daily/1day/" + code +
+                        "?apikey=vBo98I3wICJJm7RpgOzOJj6UVZ1LvGmw&language=fr-FR&details=false",
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                }, code).getBody();
+        return response;
+
+    }
     public Integer getCodeCity(String ville) {
         codeCity = -2;
         String response = restTemplate.exchange("http://dataservice.accuweather.com/locations/v1/cities" +
@@ -64,5 +84,9 @@ public class ServiceMeteoVilleController {
             System.out.println("Error");
         }
         return codeCity;
+    }
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
