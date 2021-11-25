@@ -27,7 +27,7 @@ public class ServiceMeteoVilleController {
     @Autowired
     RestTemplate restTemplate;
 
-    @ApiOperation(value = "Recuperation de la meteo de la ville", response = Iterable.class, tags = "getMeteoByNameCity")
+    @ApiOperation(value = "Recuperation de la meteo de la ville", response = Iterable.class, tags = "getMeteoCurrent")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success | OK"),
             @ApiResponse(code = 401, message = "error | Unauthorized"),
@@ -35,7 +35,7 @@ public class ServiceMeteoVilleController {
             @ApiResponse(code = 404, message = "error | Not found"),
             @ApiResponse(code = 500, message = "error | Internal server ")
     })
-    @RequestMapping(value = "getMeteoByNameCity/{city}", method = RequestMethod.GET)
+    @RequestMapping(value = "getMeteoCurrent/{city}", method = RequestMethod.GET)
     public String getMeteoByNameCity(@PathVariable String city) {
         int code = this.getCodeCity(city);
 
